@@ -1,0 +1,101 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+buildscript {
+  repositories {
+    mavenCentral()
+    maven { url 'https://s01.oss.sonatype.org' }
+    gradlePluginPortal()
+    mavenLocal()
+    google()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+  }
+  dependencies {
+    classpath "com.android.tools.build:gradle:8.1.4"
+    classpath "app.cash.zipline:zipline-gradle-plugin:1.16.0"
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.7"
+  }
+}
+
+allprojects {
+  apply plugin: 'idea'
+  apply plugin: 'io.gitlab.arturbosch.detekt'
+
+  repositories {
+    mavenCentral()
+    google()
+  }
+}
+
+configure(subprojects - project(':android') - project(':server') - project(':shared')) {
+  apply plugin: 'java-library'
+  apply plugin: 'kotlin'
+  sourceCompatibility = 17
+  compileJava {
+    options.incremental = true
+  }
+  // From https://lyze.dev/2021/04/29/libGDX-Internal-Assets-List/
+  // The article can be helpful when using assets.txt in your project.
+  compileJava.doLast {
+    // projectFolder/assets
+    def assetsFolder = new File("${project.rootDir}/assets/")
+    // projectFolder/assets/assets.txt
+    def assetsFile = new File(assetsFolder, "assets.txt")
+    // delete that file in case we've already created it
+    assetsFile.delete()
+
+    // iterate through all files inside that folder
+    // convert it to a relative path
+    // and append it to the file assets.txt
+    fileTree(assetsFolder).collect { assetsFolder.relativePath(it) }.each {
+      assetsFile.append(it + "\n")
+    }
+  }
+  compileKotlin.compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
+}
+
+subprojects {
+  version = '1.0.0'
+  ext.appName = 'Youtopia'
+  repositories {
+    mavenCentral()
+    maven { url 'https://s01.oss.sonatype.org' }
+    // You may want to remove the following line if you have errors downloading dependencies.
+    mavenLocal()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url 'https://jitpack.io' }
+  }
+}
+
+detekt {
+  toolVersion = "1.23.7"
+  config.setFrom(file("config/detekt/detekt.yml"))
+  source.setFrom(
+    "android/src/main/kotlin",
+    "core/src/main/kotlin",
+    "desktop/src/main/kotlin",
+    "ios/src/main/kotlin",
+    "server/src/androidMain/kotlin",
+    "server/src/commonMain/kotlin",
+    "server/src/jsMain/kotlin",
+    "server/src/jvmMain/kotlin",
+    "server-runner/src/commonMain/kotlin",
+    "shared/src/commonMain/kotlin",
+  )
+}
+
+tasks.register("detektAll", Detekt) { // FIXME
+  dependsOn "android:detektMain"
+  dependsOn "core:detektMain"
+  dependsOn "desktop:detektMain"
+  dependsOn "ios:detektMain"
+  dependsOn "server:detektAndroidDebug"
+  dependsOn "server:detektMetadataMain"
+  dependsOn "server:detektJsMain"
+  dependsOn "server:detektJvmMain"
+  dependsOn "server-runner:detektMain"
+  dependsOn "shared:detektMetadataMain"
+}
