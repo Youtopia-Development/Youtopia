@@ -33,7 +33,9 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 val ziplineVersion: String by project
+                val libgdxVersion: String by project
                 implementation("app.cash.zipline:zipline-loader:$ziplineVersion")
+                api("com.badlogicgames.gdx:gdx:$libgdxVersion")
             }
         }
         val androidMain by getting {

@@ -7,11 +7,13 @@ import app.cash.zipline.loader.LoadResult
 import app.cash.zipline.loader.ManifestVerifier.Companion.NO_SIGNATURE_CHECKS
 import app.cash.zipline.loader.ZiplineHttpClient
 import app.cash.zipline.loader.ZiplineLoader
+import com.badlogic.gdx.Gdx
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import okio.BufferedSource
 import okio.ByteString
+import okio.ByteString.Companion.toByteString
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import java.util.concurrent.ExecutorService
@@ -49,10 +51,12 @@ private suspend fun launchZipline(
             requestHeaders: List<Pair<String, String>>,
         ): ByteString {
             val file = url.substringAfterLast("/")
-            return FileSystem.SYSTEM.read(
-                (path ?: if (DEV) "../server/build/zipline/Development" else "../assets/localServer").toPath() / file,
+            return if (DEV) FileSystem.SYSTEM.read(
+                (path ?: "../server/build/zipline/Development").toPath() / file,
                 BufferedSource::readByteString,
-            )
+            ) else (path?.let { Gdx.files.absolute("$it/$file") }  ?: Gdx.files.internal("localServer/$file"))
+                .readBytes()
+                .toByteString()
         }
     }
     val loader = ZiplineLoader(
