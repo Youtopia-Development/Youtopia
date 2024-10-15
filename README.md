@@ -69,7 +69,7 @@ When the client asks to execute a command, the command is first passed through a
 `requestAvailableTileActions` is different in this regard: it starts with the default server, receives a list of available actions, and then goes through the mods in the reverse order, with each one having a chance to modify the list with the first mod having the final word.
 (Mods are currently sorted by their name.)
 
-In order to begin modding, download the example from here.
+In order to begin modding, download the example [from here](https://github.com/Youtopia-Development/YoutopiaExampleMod).
 This mod allows the player to convert any land into forest for free.
 Try building the mod by executing this gradle command:
 ```
