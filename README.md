@@ -9,8 +9,9 @@ A clone of "The Battle of Polytopia" with an emphasis on moddability.
 ## Current functionality
 
 Single-player sandbox mode without troops and technologies.
-Pretty much every tile action is supported.
 Server-side mods are supported.
+
+> Microsoft Windows is currently [not supported](https://github.com/cashapp/zipline/issues/1360). 
 
 ## Architecture and design
 
@@ -79,14 +80,14 @@ A folder called `Development` will appear under `server/build/zipline`, it will 
 You need to copy this folder into the MODS folder of the game.
 Here is a breakdown of its location by platform:
 
-|            |                                             |
-|------------|---------------------------------------------|
-| Windows    | AppData/Roaming/.qsr/Youtopia/MODS          |
-| Android    | Android/data/org.youtopia/files/MODS        |
-| MacOS      | Library/Application Support/Youtopia/MODS   |
-| Linux      | *YOUR_LINUX_HOME*/.qsr/youtopia/MODS        |
-| Windows XP | Application Data/Roaming/.qsr/Youtopia/MODS |
-|            |                                             |
+|                |                                                 |
+|----------------|-------------------------------------------------|
+| Android        | Android/data/org.youtopia/files/MODS            |
+| MacOS          | Library/Application Support/Youtopia/MODS       |
+| Linux          | *YOUR_LINUX_HOME*/.qsr/youtopia/MODS            |
+| ~~Windows~~    | ~~AppData/Roaming/.qsr/Youtopia/MODS~~          |
+| ~~Windows XP~~ | ~~Application Data/Roaming/.qsr/Youtopia/MODS~~ |
+|                |                                                 |
 
 Try running the game. You will see the new tile action among the others.
 
